@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "dodungchomeo"
+  },
+  "targets": {
+    "dodungchomeo": {
+      "hosting": {
+        "admin": [
+          "admin-dodungchomeo"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

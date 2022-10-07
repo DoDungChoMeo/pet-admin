@@ -6,23 +6,41 @@ import {
   AddProductForm,
   AddCategory,
   AddBrand,
-} from '~/components';
+} from '~/screens/product';
 
-function ProductsPage() {
-  return (
-    <Tabs defaultActiveKey="1">
-      <Tabs.TabPane tab="Thêm sản phẩm" key="1">
+const tabItems = [
+  {
+    label: 'Thêm sản phẩm',
+    key: 'tab-1',
+    children: (
+      <>
         <AddProductForm />
         <ProductsTable />
-      </Tabs.TabPane>
-      <Tabs.TabPane tab="Thêm danh mục" key="2">
+      </>
+    ),
+  },
+  {
+    label: 'Thêm danh mục',
+    key: 'tab-2',
+    children: (
+      <>
         <AddCategory />
-      </Tabs.TabPane>
-      <Tabs.TabPane tab="Thêm nhãn hiệu" key="3">
+      </>
+    ),
+  },
+  {
+    label: 'Thêm nhãn hiệu',
+    key: 'tab-3',
+    children: (
+      <>
         <AddBrand />
-      </Tabs.TabPane>
-    </Tabs>
-  );
+      </>
+    ),
+  },
+];
+
+function ProductsPage() {
+  return <Tabs defaultActiveKey="tab-1" items={tabItems} />;
 }
 
 export default ProductsPage;

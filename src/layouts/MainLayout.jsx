@@ -26,7 +26,6 @@ const LayoutStyled = styled.div`
 
 const ContentStyled = styled.main`
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-  min-height: 100vh;
   margin: 30px 50px;
   padding: 20px;
   background-color: #fff;

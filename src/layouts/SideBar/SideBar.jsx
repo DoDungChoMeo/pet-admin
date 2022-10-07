@@ -14,13 +14,8 @@ const menu = [
   },
   {
     label: 'Sản phẩm',
-    link: 'all-products',
+    link: 'products',
     icon: <BsBox />,
-  },
-  {
-    label: 'thêm sản phẩm',
-    link: 'add-product',
-    icon: <GrAdd />,
   },
 ];
 function SideBar({ collapsed }) {

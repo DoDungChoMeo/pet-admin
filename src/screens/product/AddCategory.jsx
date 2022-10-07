@@ -48,7 +48,7 @@ function AddCategory() {
       });
 
   return (
-    <div>
+    <Container>
       <Typography.Title level={2}>Thêm danh mục sản phẩm</Typography.Title>
       <Row gutter={[20, 20]}>
         <Col span={12}>
@@ -100,9 +100,15 @@ function AddCategory() {
           </Spin>
         </Col>
       </Row>
-    </div>
+    </Container>
   );
 }
+
+const Container = styled.div`
+  padding: 20px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  background-color: var(--white-color);
+`;
 
 const TagContainer = styled.ul`
   margin: 0;

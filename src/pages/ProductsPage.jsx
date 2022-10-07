@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tabs } from 'antd';
-
+import styled from 'styled-components';
 import {
   ProductsTable,
   AddProductForm,
@@ -40,7 +40,27 @@ const tabItems = [
 ];
 
 function ProductsPage() {
-  return <Tabs defaultActiveKey="tab-1" items={tabItems} />;
+  return (
+    <Container>
+      <Tabs defaultActiveKey="tab-1" items={tabItems} />;
+    </Container>
+  );
 }
+
+const Container = styled.div`
+  .ant-tabs-nav {
+    margin: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ant-tabs-nav-list {
+    background: var(--white-color);
+    padding: 4px 8px;
+    border-bottom: 1px solid #ccc;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+  }
+`;
 
 export default ProductsPage;

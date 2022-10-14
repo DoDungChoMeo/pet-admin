@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 function ProductsTable() {
   const [products, productsLoading] = useFirestoreCollection('products');
-  console.log({ products, productsLoading });
+  // console.log({ products, productsLoading });
   return (
     <Container>
       <Typography.Title level={2}>Danh sách sản phẩm</Typography.Title>

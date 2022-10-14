@@ -1,4 +1,4 @@
-const ANT_COLORS = [
+export const ANT_COLORS = [
   'magenta',
   'red',
   'volcano',

@@ -55,11 +55,16 @@ const Container = styled.div`
   }
 
   .ant-tabs-nav-list {
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
     background: var(--white-color);
     padding: 4px 8px;
     border-bottom: 1px solid #ccc;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
+
+    @media screen and (max-width: 768px) {
+      width: 100%;
+    }
   }
 `;
 

@@ -1,12 +1,7 @@
 import React from 'react';
 import { Tabs } from 'antd';
 import styled from 'styled-components';
-import {
-  ProductsTable,
-  AddProductForm,
-  AddCategory,
-  AddBrand,
-} from '~/screens/product';
+import { AddProductForm, AddCategory, AddBrand } from '~/screens/product';
 
 const tabItems = [
   {
@@ -15,7 +10,6 @@ const tabItems = [
     children: (
       <>
         <AddProductForm />
-        <ProductsTable />
       </>
     ),
   },

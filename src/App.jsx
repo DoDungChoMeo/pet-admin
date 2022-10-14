@@ -8,8 +8,8 @@ function App() {
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<ProductsPage />} />
-          <Route path="products" element={<ProductsPage />} />
-          <Route path="stats" element={'thống kê'} />
+          <Route path="san-pham" element={<ProductsPage />} />
+          <Route path="thong-ke" element={'thống kê'} />
         </Route>
         <Route path="*" element={'404 page not found'} />
       </Routes>

@@ -9,12 +9,12 @@ import ImageSource from '~/assets/img/logo-pet-friends-2.png';
 const menu = [
   {
     label: 'thống kê',
-    link: 'stats',
+    link: 'thong-ke',
     icon: <ImStatsDots />,
   },
   {
     label: 'Sản phẩm',
-    link: 'products',
+    link: 'san-pham',
     icon: <BsBox />,
   },
 ];

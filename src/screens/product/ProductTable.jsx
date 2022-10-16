@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Typography, Button, Image } from 'antd';
+import { Table, Typography, Button, Image, Space } from 'antd';
 import { useFirestoreCollection } from '~/hooks';
 import { formatVietnamCurrency } from '~/utils';
 import styled from 'styled-components';
@@ -14,6 +14,16 @@ const columns = [
     title: 'Tên sản phẩm',
     dataIndex: 'title',
     key: 'title',
+  },
+  {
+    title: 'SKU phân loại',
+    dataIndex: 'sku',
+    key: 'sku',
+  },
+  {
+    title: 'Phân loại',
+    dataIndex: 'classification',
+    key: 'classification',
   },
   {
     title: 'Giá bán',
@@ -38,13 +48,26 @@ function ProductTable() {
   if (products.length > 0) {
     dataTable = products.map((product) => {
       return {
-        photo: <Image width={100} src={product?.images[0]} />,
+        photo: <Image width={80} src={product?.images[0]} />,
         title: product?.title,
-        price: formatVietnamCurrency(product?.inventory.price),
-        stock: product?.inventory.stock,
+        price: product?.inventories.map((inven) => (
+          <div>{formatVietnamCurrency(inven.price)}</div>
+        )),
+        sku: product?.inventories.map((inven) => <div>{inven.sku}</div>),
+        classification: product?.inventories.map((inven) => (
+          <div>
+            <span>{inven.size}, </span>
+            <span>{inven.color}, </span>
+            <span>{inven.material}</span>
+          </div>
+        )),
+        stock: product?.inventories.map((inven) => <div>{inven.stock}</div>),
         action: (
           <>
-            <Button danger>Delete</Button>
+            <Space direction="vertical" size="small">
+              <Button>Cập nhật</Button>
+              <Button danger>Xóa</Button>
+            </Space>
           </>
         ),
       };

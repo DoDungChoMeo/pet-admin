@@ -1,7 +1,12 @@
 import React from 'react';
 import { Tabs } from 'antd';
 import styled from 'styled-components';
-import { AddProductForm, AddCategory, AddBrand } from '~/screens/product';
+import {
+  AddProductForm,
+  AddCategory,
+  AddBrand,
+  AddSelectList,
+} from '~/screens/product';
 
 const tabItems = [
   {
@@ -28,6 +33,45 @@ const tabItems = [
     children: (
       <>
         <AddBrand />
+      </>
+    ),
+  },
+  {
+    label: 'Thêm kích thước',
+    key: 'tab-4',
+    children: (
+      <>
+        <AddSelectList
+          title="Thêm kích thước"
+          collectionName="sizes"
+          keyName="size"
+        />
+      </>
+    ),
+  },
+  {
+    label: 'Thêm màu sắc',
+    key: 'tab-5',
+    children: (
+      <>
+        <AddSelectList
+          title="Thêm Màu sắc"
+          collectionName="colors"
+          keyName="color"
+        />
+      </>
+    ),
+  },
+  {
+    label: 'Thêm chất liệu',
+    key: 'tab-6',
+    children: (
+      <>
+        <AddSelectList
+          title="Thêm chất liệu"
+          collectionName="materials"
+          keyName="material"
+        />
       </>
     ),
   },

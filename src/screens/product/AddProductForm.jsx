@@ -24,6 +24,7 @@ import {
 } from 'firebase/firestore';
 import { toKebabCase, removeVietnameseTones } from '~/utils';
 import { useFirestoreCollection } from '~/hooks';
+import { useNavigate } from 'react-router-dom';
 const { Option } = Select;
 
 const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/leetb/image/upload';
@@ -53,13 +54,27 @@ const uploadImages = async (fileList) => {
 };
 
 function AddProductForm() {
+  const navigate = useNavigate();
   const firestore = getFirestore();
   const [fileList, setFileList] = useState([]);
   const [categories, categoriesLoading] = useFirestoreCollection('categories');
   const [brands, brandsLoading] = useFirestoreCollection('brands');
+  const [sizes, sizesLoading] = useFirestoreCollection('sizes');
+  const [colors, colorsLoading] = useFirestoreCollection('colors');
+  const [materials, materialsLoading] = useFirestoreCollection('materials');
 
   const handleSubmit = async (values) => {
-    const { title, brand, categories, description, price, stock } = values;
+    const {
+      title,
+      brand,
+      categories,
+      description,
+      price,
+      stock,
+      size,
+      color,
+      material,
+    } = values;
 
     //**Upload image to cloudianry */
     try {
@@ -67,6 +82,13 @@ function AddProductForm() {
 
       //**Add product to firestore */
       const timestamp = new Date().getTime();
+
+      const inventoryData = {
+        stock: (stock && Number(stock)) || 0,
+        price: (price && Number(price)) || 0,
+        createAt: serverTimestamp(),
+      };
+
       const productData = {
         productId: `${toKebabCase(
           removeVietnameseTones(title?.trim())
@@ -76,35 +98,21 @@ function AddProductForm() {
         categories: categories,
         description: description?.trim() || '',
         images: imageURLs,
+        size: size,
+        color: color,
+        material: material,
+        inventory: inventoryData,
         createAt: serverTimestamp(),
       };
 
-      const inventoryData = {
-        productId: productData.productId,
-        stock: (stock && Number(stock)) || 0,
-        price: (price && Number(price)) || 0,
-        createAt: serverTimestamp(),
-      };
-
-      console.log({ productData, inventoryData });
-
-      const batch = writeBatch(firestore);
+      console.log({ productData });
 
       // add to product collection
       const productRef = doc(firestore, `products/${productData.productId}`);
-      batch.set(productRef, productData);
-
-      // add to inventory collection
-      const inventoryRef = doc(
-        firestore,
-        `inventories/${inventoryData.productId}`
-      );
-      batch.set(inventoryRef, inventoryData);
-
-      batch
-        .commit()
+      setDoc(productRef, productData)
         .then(() => {
           message.success('Thêm sản phẩm thành công');
+          navigate('/product/list');
         })
         .catch(() => {
           message.error('Thêm sản phẩm thất bại');
@@ -141,8 +149,8 @@ function AddProductForm() {
           <Col span={24} md={12} lg={8}>
             <Form.Item name="brand" label="thương hiệu">
               <Select placeholder="Vui lòng chọn">
-                <Option key="no-brand" value="No brand">
-                  No brand
+                <Option key="dang-cap-nhat" value="Đang cập nhật">
+                  Đang cập nhật
                 </Option>
                 {brands.map((brand) => (
                   <Option key={brand.id} value={brand.brand}>
@@ -228,25 +236,52 @@ function AddProductForm() {
             </Form.Item>
           </Col>
 
-          {/* <div style={{ width: '100%', height: 20 }} />
+          <div style={{ width: '100%', height: 20 }} />
           <Col span={24}>
             <Typography.Title level={4}>Thông tin khác</Typography.Title>
           </Col>
           <Col span={24} md={12} lg={8}>
             <Form.Item name="size" label="kích thước">
-              <Input />
+              <Select placeholder="Vui lòng chọn">
+                <Option key="dang-cap-nhat" value="Đang cập nhật">
+                  Đang cập nhật
+                </Option>
+                {sizes.map((size) => (
+                  <Option key={size.id} value={size.v}>
+                    {size.v}
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
           </Col>
           <Col span={24} md={12} lg={8}>
             <Form.Item name="color" label="màu sắc">
-              <Input />
+              <Select placeholder="Vui lòng chọn">
+                <Option key="dang-cap-nhat" value="Đang cập nhật">
+                  Đang cập nhật
+                </Option>
+                {colors.map((color) => (
+                  <Option key={color.id} value={color.v}>
+                    {color.v}
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
           </Col>
           <Col span={24} md={12} lg={8}>
             <Form.Item name="material" label="chất liệu">
-              <Input />
+              <Select placeholder="Vui lòng chọn">
+                <Option key="dang-cap-nhat" value="Đang cập nhật">
+                  Đang cập nhật
+                </Option>
+                {materials.map((material) => (
+                  <Option key={material.id} value={material.v}>
+                    {material.v}
+                  </Option>
+                ))}
+              </Select>
             </Form.Item>
-          </Col> */}
+          </Col>
         </Row>
 
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>

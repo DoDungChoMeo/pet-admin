@@ -1,21 +1,20 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ImStatsDots } from 'react-icons/im';
 import { BsBox } from 'react-icons/bs';
-import { GrAdd } from 'react-icons/gr';
+import { PlusCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import ImageSource from '~/assets/img/logo-pet-friends-2.png';
 
 const menu = [
   {
-    label: 'thống kê',
-    link: 'thong-ke',
-    icon: <ImStatsDots />,
+    label: 'Tất cả sản phẩm',
+    link: '/product/list',
+    icon: <BsBox />,
   },
   {
-    label: 'Sản phẩm',
-    link: 'san-pham',
-    icon: <BsBox />,
+    label: 'Thêm sản phẩm',
+    link: '/product/new',
+    icon: <PlusCircleOutlined />,
   },
 ];
 function SideBar({ collapsed }) {
@@ -50,8 +49,8 @@ function SideBar({ collapsed }) {
             return (
               <li key={index}>
                 <Link to={item.link}>
-                  <span>{item.label}</span>
                   {item.icon}
+                  <span>{item.label}</span>
                 </Link>
               </li>
             );

@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import {
   Form,
   Input,
-  InputNumber,
   Select,
   Button,
   Row,
@@ -11,10 +10,8 @@ import {
   message,
   Typography,
   Upload,
-  Space,
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-import axios from 'axios';
 import {
   doc,
   setDoc,
@@ -25,57 +22,32 @@ import {
 import { toKebabCase, removeVietnameseTones } from '~/utils';
 import { useFirestoreCollection } from '~/hooks';
 import { useNavigate } from 'react-router-dom';
+import uploadImages from './uploadImages';
+import DynamicFormList from './DynamicFormList';
+
 const { Option } = Select;
-
-const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/leetb/image/upload';
-const CLOUDINARY_UPLOAD_PRESET = 'petfriends';
-
-const uploadImages = async (fileList) => {
-  const imageURLs = [];
-  const config = {
-    url: CLOUDINARY_URL,
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-  };
-
-  for (const file of fileList) {
-    const formData = new FormData();
-    formData.append('file', file.originFileObj);
-    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    const res = await axios({ ...config, data: formData });
-    imageURLs.push(res.data.secure_url);
-  }
-
-  return new Promise((resolve) => {
-    resolve(imageURLs);
-  });
-};
 
 function AddProductForm() {
   const navigate = useNavigate();
   const firestore = getFirestore();
   const [fileList, setFileList] = useState([]);
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [categories, categoriesLoading] = useFirestoreCollection('categories');
   const [brands, brandsLoading] = useFirestoreCollection('brands');
-  const [sizes, sizesLoading] = useFirestoreCollection('sizes');
-  const [colors, colorsLoading] = useFirestoreCollection('colors');
-  const [materials, materialsLoading] = useFirestoreCollection('materials');
 
   const handleSubmit = async (values) => {
-    const {
-      title,
-      brand,
-      categories,
-      description,
-      price,
-      stock,
-      size,
-      color,
-      material,
-    } = values;
-
+    setSubmitLoading(true);
+    const { title, brand, categories, description, inventories } = values;
+    const newInventories = inventories.map((inven) => {
+      return {
+        ...inven,
+        sku:
+          inven.sku ||
+          `${toKebabCase(removeVietnameseTones(inven.size))}--${toKebabCase(
+            removeVietnameseTones(inven.color)
+          )}--${toKebabCase(removeVietnameseTones(inven.material))}`,
+      };
+    });
     //**Upload image to cloudianry */
     try {
       const imageURLs = await uploadImages(fileList); // res image URLs
@@ -83,47 +55,44 @@ function AddProductForm() {
       //**Add product to firestore */
       const timestamp = new Date().getTime();
 
-      const inventoryData = {
-        stock: (stock && Number(stock)) || 0,
-        price: (price && Number(price)) || 0,
-        createAt: serverTimestamp(),
-      };
-
       const productData = {
         productId: `${toKebabCase(
           removeVietnameseTones(title?.trim())
         )}--${timestamp}`,
-        title: title?.trim() || '',
+        title: title?.trim(),
         brand: brand?.trim() || '',
         categories: categories,
         description: description?.trim() || '',
         images: imageURLs,
-        size: size,
-        color: color,
-        material: material,
-        inventory: inventoryData,
+        inventories: newInventories,
         createAt: serverTimestamp(),
       };
 
-      console.log({ productData });
-
+      console.log(JSON.stringify(productData));
       // add to product collection
       const productRef = doc(firestore, `products/${productData.productId}`);
       setDoc(productRef, productData)
         .then(() => {
           message.success('Thêm sản phẩm thành công');
+          setSubmitLoading(false);
           navigate('/product/list');
         })
         .catch(() => {
           message.error('Thêm sản phẩm thất bại');
+          setSubmitLoading(false);
         });
     } catch (e) {
       console.log(e);
+      message.error(e);
+      setSubmitLoading(false);
     }
   };
 
   const handleUploadChange = ({ fileList }) => {
-    const newFileList = fileList.map((file) => ({ ...file, status: 'done' }));
+    const newFileList = fileList.map((file) => ({
+      ...file,
+      status: 'done',
+    }));
     setFileList(newFileList);
   };
 
@@ -147,7 +116,11 @@ function AddProductForm() {
           </Col>
 
           <Col span={24} md={12} lg={8}>
-            <Form.Item name="brand" label="thương hiệu">
+            <Form.Item
+              name="brand"
+              label="thương hiệu"
+              rules={[{ required: true, message: 'Không được để trống ô' }]}
+            >
               <Select placeholder="Vui lòng chọn">
                 <Option key="dang-cap-nhat" value="Đang cập nhật">
                   Đang cập nhật
@@ -161,8 +134,15 @@ function AddProductForm() {
             </Form.Item>
           </Col>
           <Col span={24} md={12} lg={8}>
-            <Form.Item name="categories" label="danh mục sản phẩm">
+            <Form.Item
+              name="categories"
+              label="danh mục sản phẩm"
+              rules={[{ required: true, message: 'Không được để trống ô' }]}
+            >
               <Select mode="multiple" placeholder="Vui lòng chọn">
+                <Option key="tat-ca-san-pham" value="Tất cả sản phẩm">
+                  Tất cả sản phẩm
+                </Option>
                 {categories.map((category) => (
                   <Option key={category.id} value={category.category}>
                     {category.category}
@@ -198,89 +178,8 @@ function AddProductForm() {
           <Col span={24}>
             <Typography.Title level={4}>Thông tin bán hàng</Typography.Title>
           </Col>
-          <Col span={24} md={12} lg={8}>
-            <Form.Item
-              name="price"
-              label="giá bán"
-              rules={[
-                {
-                  required: true,
-                  message: 'Không được để trống',
-                },
-              ]}
-            >
-              <InputNumber
-                placeholder="Nhập vào"
-                min={0}
-                style={{ width: '100%' }}
-                prefix="₫"
-              />
-            </Form.Item>
-          </Col>
-          <Col span={24} md={12} lg={8}>
-            <Form.Item
-              name="stock"
-              label="số lượng thêm vào kho"
-              rules={[
-                {
-                  required: true,
-                  message: 'Không được để trống',
-                },
-              ]}
-            >
-              <InputNumber
-                placeholder="Nhập vào"
-                min={0}
-                style={{ width: '100%' }}
-              />
-            </Form.Item>
-          </Col>
-
-          <div style={{ width: '100%', height: 20 }} />
           <Col span={24}>
-            <Typography.Title level={4}>Thông tin khác</Typography.Title>
-          </Col>
-          <Col span={24} md={12} lg={8}>
-            <Form.Item name="size" label="kích thước">
-              <Select placeholder="Vui lòng chọn">
-                <Option key="dang-cap-nhat" value="Đang cập nhật">
-                  Đang cập nhật
-                </Option>
-                {sizes.map((size) => (
-                  <Option key={size.id} value={size.v}>
-                    {size.v}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={24} md={12} lg={8}>
-            <Form.Item name="color" label="màu sắc">
-              <Select placeholder="Vui lòng chọn">
-                <Option key="dang-cap-nhat" value="Đang cập nhật">
-                  Đang cập nhật
-                </Option>
-                {colors.map((color) => (
-                  <Option key={color.id} value={color.v}>
-                    {color.v}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={24} md={12} lg={8}>
-            <Form.Item name="material" label="chất liệu">
-              <Select placeholder="Vui lòng chọn">
-                <Option key="dang-cap-nhat" value="Đang cập nhật">
-                  Đang cập nhật
-                </Option>
-                {materials.map((material) => (
-                  <Option key={material.id} value={material.v}>
-                    {material.v}
-                  </Option>
-                ))}
-              </Select>
-            </Form.Item>
+            <DynamicFormList />
           </Col>
         </Row>
 
@@ -290,6 +189,7 @@ function AddProductForm() {
             type="primary"
             size="large"
             className="submit-button"
+            loading={submitLoading}
           >
             Thêm sản phẩm
           </Button>

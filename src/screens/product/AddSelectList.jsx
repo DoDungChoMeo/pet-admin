@@ -22,8 +22,6 @@ function AddSelectList({ title, collectionName, keyName }) {
   const [collection, loading] = useFirestoreCollection(collectionName);
   const firestore = getFirestore();
 
-  console.log(collection);
-
   const handleAdd = (values) => {
     const { v } = values;
     const id = toKebabCase(removeVietnameseTones(v));

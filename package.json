@@ -11,10 +11,13 @@
   "dependencies": {
     "@ant-design/icons": "^4.7.0",
     "antd": "^4.23.3",
+    "axios": "^1.0.0",
     "firebase": "^9.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.4.1"
+    "react-icons": "^4.4.0",
+    "react-router-dom": "^6.4.1",
+    "styled-components": "^5.3.6"
   },
   "devDependencies": {
     "@types/react": "^18.0.17",

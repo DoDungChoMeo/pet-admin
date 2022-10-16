@@ -1,54 +1,34 @@
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Layout, Menu } from 'antd';
-import {
-  UserOutlined,
-  VideoCameraOutlined,
-  UploadOutlined,
-} from '@ant-design/icons';
-const { Sider } = Layout;
-
-const items = [
-  {
-    key: '1',
-    icon: <UserOutlined />,
-    label: 'nav 1',
-  },
-  {
-    key: '2',
-    icon: <VideoCameraOutlined />,
-    label: 'nav 2',
-  },
-  {
-    key: '3',
-    icon: <UploadOutlined />,
-    label: 'nav 3',
-  },
-];
+import styled from 'styled-components';
+import SideBar from './SideBar';
+import Header from './Header';
 
 function MainLayout() {
   const [collapsed, setCollapsed] = useState(false);
+
   return (
-    <Layout>
-      <Sider
-        trigger={null}
-        collapsible
-        collapsed={collapsed}
-        style={{ minHeight: '100vh' }}
-      >
-        <Menu
-          theme="dark"
-          mode="inline"
-          defaultSelectedKeys={['1']}
-          items={items}
-        />
-      </Sider>
-      <Layout>
-        <Outlet />
-        <footer>footer</footer>
-      </Layout>
-    </Layout>
+    <LayoutStyled className="main-layout">
+      <SideBar collapsed={collapsed} />
+      <div style={{ width: '100%' }}>
+        <Header collapsed={collapsed} setCollapsed={setCollapsed} />
+        <ContentStyled>
+          <Outlet />
+        </ContentStyled>
+      </div>
+    </LayoutStyled>
   );
 }
+
+const LayoutStyled = styled.div`
+  display: flex;
+`;
+
+const ContentStyled = styled.main`
+  margin: 30px 50px;
+  @media (max-width: 991.18px) {
+    margin: 0;
+  }
+`;
 
 export default MainLayout;

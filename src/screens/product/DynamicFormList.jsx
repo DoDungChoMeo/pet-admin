@@ -17,7 +17,7 @@ const { Option } = Select;
 function DynamicFormList() {
   const [sizes, sizesLoading] = useFirestoreCollection('sizes');
   const [colors, colorsLoading] = useFirestoreCollection('colors');
-  const [materials, materialsLoading] = useFirestoreCollection('materials');
+  const [weights, weightsLoading] = useFirestoreCollection('weights');
   const addFirstFormItem = useRef();
   useEffect(() => {
     addFirstFormItem.current();
@@ -96,8 +96,8 @@ function DynamicFormList() {
                   <Col span={24} md={12} lg={8}>
                     <Form.Item
                       {...restField}
-                      name={[name, 'material']}
-                      label="chất liệu"
+                      name={[name, 'weights']}
+                      label="Khối lượng"
                       rules={[
                         { required: true, message: 'Không được để trống ô' },
                       ]}
@@ -106,9 +106,9 @@ function DynamicFormList() {
                         <Option key="dang-cap-nhat" value="Đang cập nhật">
                           Đang cập nhật
                         </Option>
-                        {materials.map((material) => (
-                          <Option key={material.id} value={material.v}>
-                            {material.v}
+                        {weights.map((weights) => (
+                          <Option key={weights.id} value={weights.v}>
+                            {weights.v}
                           </Option>
                         ))}
                       </Select>

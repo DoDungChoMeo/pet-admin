@@ -41,11 +41,7 @@ function AddProductForm() {
     const newInventories = inventories.map((inven) => {
       return {
         ...inven,
-        sku:
-          inven.sku ||
-          `${toKebabCase(removeVietnameseTones(inven.size))}--${toKebabCase(
-            removeVietnameseTones(inven.color)
-          )}--${toKebabCase(removeVietnameseTones(inven.material))}`,
+        sku: inven.sku || '',
       };
     });
     //**Upload image to cloudianry */
@@ -68,7 +64,6 @@ function AddProductForm() {
         createAt: serverTimestamp(),
       };
 
-      console.log(JSON.stringify(productData));
       // add to product collection
       const productRef = doc(firestore, `products/${productData.productId}`);
       setDoc(productRef, productData)

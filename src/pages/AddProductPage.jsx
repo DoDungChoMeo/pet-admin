@@ -63,14 +63,14 @@ const tabItems = [
     ),
   },
   {
-    label: 'Thêm chất liệu',
+    label: 'Thêm khối lượng',
     key: 'tab-6',
     children: (
       <>
         <AddSelectList
-          title="Thêm chất liệu"
-          collectionName="materials"
-          keyName="material"
+          title="Thêm khối lượng"
+          collectionName="weights"
+          keyName="weights"
         />
       </>
     ),

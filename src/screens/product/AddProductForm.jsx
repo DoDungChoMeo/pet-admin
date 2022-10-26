@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import {
   Form,
   Input,
+  InputNumber,
   Select,
   Button,
   Row,
@@ -14,6 +15,7 @@ import {
 import { UploadOutlined } from '@ant-design/icons';
 import {
   doc,
+  collection,
   setDoc,
   getFirestore,
   serverTimestamp,
@@ -23,7 +25,6 @@ import { toKebabCase, removeVietnameseTones } from '~/utils';
 import { useFirestoreCollection } from '~/hooks';
 import { useNavigate } from 'react-router-dom';
 import uploadImages from './uploadImages';
-import DynamicFormList from './DynamicFormList';
 
 const { Option } = Select;
 
@@ -37,36 +38,42 @@ function AddProductForm() {
 
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
-    const { title, brand, categories, description, inventories } = values;
-    const newInventories = inventories.map((inven) => {
-      return {
-        ...inven,
-        sku: inven.sku || '',
-      };
-    });
-    //**Upload image to cloudianry */
+    const { title, brand, categories, description, price, stock } = values;
+    /**Upload image to cloudianry */
     try {
       const imageURLs = await uploadImages(fileList); // res image URLs
 
       //**Add product to firestore */
       const timestamp = new Date().getTime();
 
+      const productRef = doc(collection(firestore, `products`));
       const productData = {
-        productId: `${toKebabCase(
-          removeVietnameseTones(title?.trim())
-        )}--${timestamp}`,
+        productId: productRef.id,
+        bookmarkName: `${toKebabCase(removeVietnameseTones(title?.trim()))}`,
         title: title?.trim(),
         brand: brand?.trim() || '',
         categories: categories,
         description: description?.trim() || '',
         images: imageURLs,
-        inventories: newInventories,
         createAt: serverTimestamp(),
       };
 
-      // add to product collection
-      const productRef = doc(firestore, `products/${productData.productId}`);
-      setDoc(productRef, productData)
+      const inventoryRef = doc(collection(firestore, 'inventories'));
+      const inventoryData = {
+        id: inventoryRef.id,
+        productId: productData.productId,
+        price: Number(price),
+        stock: Number(stock),
+        reservations: [],
+        createAt: serverTimestamp(),
+      };
+
+      console.log(JSON.stringify({ productData, inventoryData }));
+      const batch = writeBatch(firestore);
+      batch.set(productRef, productData);
+      batch.set(inventoryRef, inventoryData);
+      batch
+        .commit()
         .then(() => {
           message.success('Thêm sản phẩm thành công');
           setSubmitLoading(false);
@@ -173,8 +180,43 @@ function AddProductForm() {
           <Col span={24}>
             <Typography.Title level={4}>Thông tin bán hàng</Typography.Title>
           </Col>
-          <Col span={24}>
-            <DynamicFormList />
+          <Col span={24}>{/* <DynamicFormList /> */}</Col>
+          <Col span={24} md={12} lg={8}>
+            <Form.Item
+              name={'price'}
+              label="giá bán"
+              rules={[
+                {
+                  required: true,
+                  message: 'Không được để trống ô',
+                },
+              ]}
+            >
+              <InputNumber
+                placeholder="Nhập vào"
+                min={0}
+                style={{ width: '100%' }}
+                prefix="₫"
+              />
+            </Form.Item>
+          </Col>
+          <Col span={24} md={12} lg={8}>
+            <Form.Item
+              name={'stock'}
+              label="số lượng thêm vào kho"
+              rules={[
+                {
+                  required: true,
+                  message: 'Không được để trống ô',
+                },
+              ]}
+            >
+              <InputNumber
+                placeholder="Nhập vào"
+                min={0}
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
           </Col>
         </Row>
 

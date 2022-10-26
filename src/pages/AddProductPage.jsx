@@ -36,45 +36,45 @@ const tabItems = [
       </>
     ),
   },
-  {
-    label: 'Thêm kích thước',
-    key: 'tab-4',
-    children: (
-      <>
-        <AddSelectList
-          title="Thêm kích thước"
-          collectionName="sizes"
-          keyName="size"
-        />
-      </>
-    ),
-  },
-  {
-    label: 'Thêm màu sắc',
-    key: 'tab-5',
-    children: (
-      <>
-        <AddSelectList
-          title="Thêm Màu sắc"
-          collectionName="colors"
-          keyName="color"
-        />
-      </>
-    ),
-  },
-  {
-    label: 'Thêm khối lượng',
-    key: 'tab-6',
-    children: (
-      <>
-        <AddSelectList
-          title="Thêm khối lượng"
-          collectionName="weights"
-          keyName="weights"
-        />
-      </>
-    ),
-  },
+  // {
+  //   label: 'Thêm kích thước',
+  //   key: 'tab-4',
+  //   children: (
+  //     <>
+  //       <AddSelectList
+  //         title="Thêm kích thước"
+  //         collectionName="sizes"
+  //         keyName="size"
+  //       />
+  //     </>
+  //   ),
+  // },
+  // {
+  //   label: 'Thêm màu sắc',
+  //   key: 'tab-5',
+  //   children: (
+  //     <>
+  //       <AddSelectList
+  //         title="Thêm Màu sắc"
+  //         collectionName="colors"
+  //         keyName="color"
+  //       />
+  //     </>
+  //   ),
+  // },
+  // {
+  //   label: 'Thêm khối lượng',
+  //   key: 'tab-6',
+  //   children: (
+  //     <>
+  //       <AddSelectList
+  //         title="Thêm khối lượng"
+  //         collectionName="weights"
+  //         keyName="weights"
+  //       />
+  //     </>
+  //   ),
+  // },
 ];
 
 function ProductsPage() {

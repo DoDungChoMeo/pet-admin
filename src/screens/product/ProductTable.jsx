@@ -1,8 +1,26 @@
 import React from 'react';
-import { Table, Typography, Button, Image, Space } from 'antd';
-import { useFirestoreCollection } from '~/hooks';
+import {
+  Table,
+  Typography,
+  Button,
+  Image,
+  Space,
+  Popconfirm,
+  message,
+} from 'antd';
+import { useFirestoreCollection, useFirestoreDocument } from '~/hooks';
 import { formatVietnamCurrency } from '~/utils';
 import styled from 'styled-components';
+import {
+  getFirestore,
+  query,
+  doc,
+  getDocs,
+  where,
+  collection,
+  writeBatch,
+} from 'firebase/firestore';
+import _ from 'lodash';
 
 const columns = [
   {
@@ -14,16 +32,6 @@ const columns = [
     title: 'Tên sản phẩm',
     dataIndex: 'title',
     key: 'title',
-  },
-  {
-    title: 'SKU phân loại',
-    dataIndex: 'sku',
-    key: 'sku',
-  },
-  {
-    title: 'Phân loại',
-    dataIndex: 'classification',
-    key: 'classification',
   },
   {
     title: 'Giá bán',
@@ -43,30 +51,56 @@ const columns = [
 ];
 
 function ProductTable() {
-  const [products, productsLoading] = useFirestoreCollection('products');
+  const [products] = useFirestoreCollection('products');
+  const [inventories] = useFirestoreCollection(`inventories`);
+  const firestore = getFirestore();
+
+  const handleDelete = (productId) => {
+    // deleteDoc(doc(db, "cities", "DC"));
+    // const batch = writeBatch(firestore);
+    // const inventoriesColection = collection(firestore, 'inventories');
+    // const q = query(inventoriesColection, where('productId', '==', productId));
+    // getDocs(q).then((querySnapshot) =>
+    //   querySnapshot.forEach((doc) => {
+    //     batch.delete(doc);
+    //   })
+    // );
+    // const productRef = doc(firestore, `product/${productId}`);
+    // batch.delete(productRef);
+    // batch
+    //   .commit()
+    //   .then(() => {
+    //     message.success('Xóa thành công');
+    //   })
+    //   .catch((e) => {
+    //     message.error('Xóa thất bại');
+    //     console.log('Xóa thất bại: ', e);
+    //   });
+  };
+
   let dataTable = [];
   if (products.length > 0) {
     dataTable = products.map((product) => {
+      const index = _.findIndex(inventories, { productId: product?.productId });
+
       return {
+        key: product?.productId,
         photo: <Image width={80} src={product?.images[0]} />,
         title: product?.title,
-        price: product?.inventories.map((inven) => (
-          <div>{formatVietnamCurrency(inven.price)}</div>
-        )),
-        sku: product?.inventories.map((inven) => <div>{inven.sku}</div>),
-        classification: product?.inventories.map((inven) => (
-          <div>
-            <span>{inven.size}, </span>
-            <span>{inven.color}, </span>
-            <span>{inven.material}</span>
-          </div>
-        )),
-        stock: product?.inventories.map((inven) => <div>{inven.stock}</div>),
+        price: inventories[index]?.price,
+        stock: inventories[index]?.stock,
         action: (
           <>
             <Space direction="vertical" size="small">
               <Button>Cập nhật</Button>
-              <Button danger>Xóa</Button>
+              <Popconfirm
+                title="Bạn có muốn xóa?"
+                okText="Xóa"
+                cancelText="Không"
+                onConfirm={() => handleDelete(product?.productId)}
+              >
+                <Button danger>Xóa</Button>
+              </Popconfirm>
             </Space>
           </>
         ),
@@ -74,7 +108,6 @@ function ProductTable() {
     });
   }
 
-  console.log(dataTable);
   return (
     <Container>
       <Typography.Title level={2}>Danh sách sản phẩm</Typography.Title>

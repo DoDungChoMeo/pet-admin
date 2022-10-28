@@ -11,12 +11,12 @@ import {
   message,
   Typography,
   Upload,
+  Radio,
 } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import {
   doc,
   collection,
-  setDoc,
   getFirestore,
   serverTimestamp,
   writeBatch,
@@ -38,7 +38,8 @@ function AddProductForm() {
 
   const handleSubmit = async (values) => {
     setSubmitLoading(true);
-    const { title, brand, categories, description, price, stock } = values;
+    const { title, brand, categories, description, price, stock, status } =
+      values;
     /**Upload image to cloudianry */
     try {
       const imageURLs = await uploadImages(fileList); // res image URLs
@@ -55,6 +56,7 @@ function AddProductForm() {
         categories: categories,
         description: description?.trim() || '',
         images: imageURLs,
+        status: status,
         createAt: serverTimestamp(),
       };
 
@@ -128,8 +130,8 @@ function AddProductForm() {
                   Đang cập nhật
                 </Option>
                 {brands.map((brand) => (
-                  <Option key={brand.id} value={brand.brand}>
-                    {brand.brand}
+                  <Option key={brand.id} value={brand.value}>
+                    {brand.value}
                   </Option>
                 ))}
               </Select>
@@ -146,8 +148,8 @@ function AddProductForm() {
                   Tất cả sản phẩm
                 </Option>
                 {categories.map((category) => (
-                  <Option key={category.id} value={category.category}>
-                    {category.category}
+                  <Option key={category.id} value={category.value}>
+                    {category.value}
                   </Option>
                 ))}
               </Select>
@@ -216,6 +218,24 @@ function AddProductForm() {
                 min={0}
                 style={{ width: '100%' }}
               />
+            </Form.Item>
+          </Col>
+          <Col span={24} md={12} lg={8}>
+            <Form.Item
+              name={'status'}
+              label="Trạng thái"
+              tooltip="Ẩn: Khách hàng không thể nhìn thấy sản phẩm trong shop. Có thể thay đổi sau"
+              rules={[
+                {
+                  required: true,
+                  message: 'Không được để trống ô',
+                },
+              ]}
+            >
+              <Radio.Group>
+                <Radio value={'visible'}>Hiển thị</Radio>
+                <Radio value={'hidden'}>Ẩn</Radio>
+              </Radio.Group>
             </Form.Item>
           </Col>
         </Row>

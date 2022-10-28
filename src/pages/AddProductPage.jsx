@@ -23,7 +23,10 @@ const tabItems = [
     key: 'tab-2',
     children: (
       <>
-        <AddCategory />
+        <AddSelectList
+          title="Thêm danh mục sản phẩm"
+          collectionName="categories"
+        />
       </>
     ),
   },
@@ -32,7 +35,7 @@ const tabItems = [
     key: 'tab-3',
     children: (
       <>
-        <AddBrand />
+        <AddSelectList title="Thêm nhãn hiệu" collectionName="brands" />
       </>
     ),
   },

@@ -18,7 +18,7 @@ import randomColor from '~/utils/randomColor';
 import { useFirestoreCollection } from '~/hooks';
 import { Spin } from '~/components';
 
-function AddSelectList({ title, collectionName, keyName }) {
+function AddSelectList({ title, collectionName }) {
   const [collection, loading] = useFirestoreCollection(collectionName);
   const firestore = getFirestore();
 
@@ -27,8 +27,7 @@ function AddSelectList({ title, collectionName, keyName }) {
     const id = toKebabCase(removeVietnameseTones(v));
     const data = {
       id,
-      k: keyName,
-      v: v?.trim() || '',
+      value: v?.trim() || '',
     };
 
     setDoc(doc(firestore, `${collectionName}/${id}`), data)
@@ -87,7 +86,7 @@ function AddSelectList({ title, collectionName, keyName }) {
                   color={randomColor([70, 150], [70, 150], [70, 150])}
                   key={document?.id}
                 >
-                  <span>{document?.v}</span>
+                  <span>{document?.value}</span>
                   <Popconfirm
                     title="Bạn có muốn xóa?"
                     onConfirm={() => handleDelete(document?.id)}

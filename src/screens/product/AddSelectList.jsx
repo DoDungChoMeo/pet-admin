@@ -42,7 +42,7 @@ function AddSelectList({ title, collectionName }) {
   const handleDelete = (id) =>
     deleteDoc(doc(firestore, `${collectionName}/${id}`))
       .then(() => {
-        message.info('Xóa thành công');
+        message.success('Xóa thành công');
       })
       .catch((e) => {
         message.error('Xóa thất bại');

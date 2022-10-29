@@ -70,10 +70,10 @@ function AddProductForm() {
         createAt: serverTimestamp(),
       };
 
-      console.log(JSON.stringify({ productData, inventoryData }));
+      // console.log(JSON.stringify({ productData, inventoryData }));
       const batch = writeBatch(firestore);
-      batch.set(productRef, productData);
-      batch.set(inventoryRef, inventoryData);
+      batch.set(productRef, { ...productData, inventory: inventoryData });
+      // batch.set(inventoryRef, inventoryData);
       batch
         .commit()
         .then(() => {

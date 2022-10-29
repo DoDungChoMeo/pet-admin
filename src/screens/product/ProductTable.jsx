@@ -16,10 +16,6 @@ import {
   collection,
   doc,
   updateDoc,
-  writeBatch,
-  runTransaction,
-  getDoc,
-  getDocs,
 } from 'firebase/firestore';
 import _ from 'lodash';
 import { useFirestoreQuery } from '~/hooks';
@@ -60,54 +56,29 @@ function ProductTable() {
     where('status', 'not-in', ['deleted'])
   );
   const [products] = useFirestoreQuery(productQuery);
-  const inventoryQuery = query(
-    collection(firestore, 'inventories'),
-    where('status', 'not-in', ['deleted'])
-  );
-  const [inventories] = useFirestoreQuery(inventoryQuery);
-  console.log({ products, inventories });
 
   const handleDelete = async (productId) => {
-    try {
-      const batch = writeBatch(firestore);
-      const productRef = doc(firestore, `products/${productId}`);
-      batch.update(productRef, {
-        status: 'deleted',
+    const productRef = doc(firestore, `products/${productId}`);
+    updateDoc(productRef, {
+      status: 'deleted',
+    })
+      .then(() => {
+        message.success('Xóa thành công');
+      })
+      .catch((e) => {
+        message.error('Xóa thất bại: ', e);
       });
-
-      const inventoryQuery = query(
-        collection(firestore, `inventories`),
-        where('productId', '==', productId)
-      );
-      const res = await getDocs(inventoryQuery);
-      const inventoryRef = await res.docs[0].ref;
-      batch.update(inventoryRef, {
-        status: 'deleted',
-      });
-      batch
-        .commit()
-        .then(() => {
-          message.success('Xóa thành công');
-        })
-        .catch((e) => {
-          message.error('Xóa thất bại: ', e);
-        });
-    } catch (e) {
-      console.log(e);
-    }
   };
 
   let dataTable = [];
   if (products.length > 0) {
     dataTable = products.map((product) => {
-      const index = _.findIndex(inventories, { productId: product?.productId });
-
       return {
         key: product?.productId,
         photo: <Image width={80} src={product?.images[0]} />,
         title: product?.title,
-        price: <Price>{inventories[index]?.price}</Price>,
-        stock: inventories[index]?.stock,
+        price: <Price>{product?.inventory?.price}</Price>,
+        stock: product?.inventory?.stock,
         action: (
           <>
             <Space direction="vertical" size="small">

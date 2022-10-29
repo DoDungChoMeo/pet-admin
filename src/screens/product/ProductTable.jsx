@@ -8,19 +8,22 @@ import {
   Popconfirm,
   message,
 } from 'antd';
-import { useFirestoreCollection, useFirestoreDocument } from '~/hooks';
-import { formatVietnamCurrency } from '~/utils';
 import styled from 'styled-components';
 import {
   getFirestore,
   query,
-  doc,
-  getDocs,
   where,
   collection,
+  doc,
+  updateDoc,
   writeBatch,
+  runTransaction,
+  getDoc,
+  getDocs,
 } from 'firebase/firestore';
 import _ from 'lodash';
+import { useFirestoreQuery } from '~/hooks';
+import { Price } from '~/components';
 
 const columns = [
   {
@@ -51,31 +54,47 @@ const columns = [
 ];
 
 function ProductTable() {
-  const [products] = useFirestoreCollection('products');
-  const [inventories] = useFirestoreCollection(`inventories`);
   const firestore = getFirestore();
+  const productQuery = query(
+    collection(firestore, 'products'),
+    where('status', 'not-in', ['deleted'])
+  );
+  const [products] = useFirestoreQuery(productQuery);
+  const inventoryQuery = query(
+    collection(firestore, 'inventories'),
+    where('status', 'not-in', ['deleted'])
+  );
+  const [inventories] = useFirestoreQuery(inventoryQuery);
+  console.log({ products, inventories });
 
-  const handleDelete = (productId) => {
-    // deleteDoc(doc(db, "cities", "DC"));
-    // const batch = writeBatch(firestore);
-    // const inventoriesColection = collection(firestore, 'inventories');
-    // const q = query(inventoriesColection, where('productId', '==', productId));
-    // getDocs(q).then((querySnapshot) =>
-    //   querySnapshot.forEach((doc) => {
-    //     batch.delete(doc);
-    //   })
-    // );
-    // const productRef = doc(firestore, `product/${productId}`);
-    // batch.delete(productRef);
-    // batch
-    //   .commit()
-    //   .then(() => {
-    //     message.success('Xóa thành công');
-    //   })
-    //   .catch((e) => {
-    //     message.error('Xóa thất bại');
-    //     console.log('Xóa thất bại: ', e);
-    //   });
+  const handleDelete = async (productId) => {
+    try {
+      const batch = writeBatch(firestore);
+      const productRef = doc(firestore, `products/${productId}`);
+      batch.update(productRef, {
+        status: 'deleted',
+      });
+
+      const inventoryQuery = query(
+        collection(firestore, `inventories`),
+        where('productId', '==', productId)
+      );
+      const res = await getDocs(inventoryQuery);
+      const inventoryRef = await res.docs[0].ref;
+      batch.update(inventoryRef, {
+        status: 'deleted',
+      });
+      batch
+        .commit()
+        .then(() => {
+          message.success('Xóa thành công');
+        })
+        .catch((e) => {
+          message.error('Xóa thất bại: ', e);
+        });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   let dataTable = [];
@@ -87,7 +106,7 @@ function ProductTable() {
         key: product?.productId,
         photo: <Image width={80} src={product?.images[0]} />,
         title: product?.title,
-        price: inventories[index]?.price,
+        price: <Price>{inventories[index]?.price}</Price>,
         stock: inventories[index]?.stock,
         action: (
           <>

@@ -8,19 +8,18 @@ import {
   Popconfirm,
   message,
 } from 'antd';
-import { useFirestoreCollection, useFirestoreDocument } from '~/hooks';
-import { formatVietnamCurrency } from '~/utils';
 import styled from 'styled-components';
 import {
   getFirestore,
   query,
-  doc,
-  getDocs,
   where,
   collection,
-  writeBatch,
+  doc,
+  updateDoc,
 } from 'firebase/firestore';
 import _ from 'lodash';
+import { useFirestoreQuery } from '~/hooks';
+import { Price } from '~/components';
 
 const columns = [
   {
@@ -51,44 +50,35 @@ const columns = [
 ];
 
 function ProductTable() {
-  const [products] = useFirestoreCollection('products');
-  const [inventories] = useFirestoreCollection(`inventories`);
   const firestore = getFirestore();
+  const productQuery = query(
+    collection(firestore, 'products'),
+    where('status', 'not-in', ['deleted'])
+  );
+  const [products] = useFirestoreQuery(productQuery);
 
-  const handleDelete = (productId) => {
-    // deleteDoc(doc(db, "cities", "DC"));
-    // const batch = writeBatch(firestore);
-    // const inventoriesColection = collection(firestore, 'inventories');
-    // const q = query(inventoriesColection, where('productId', '==', productId));
-    // getDocs(q).then((querySnapshot) =>
-    //   querySnapshot.forEach((doc) => {
-    //     batch.delete(doc);
-    //   })
-    // );
-    // const productRef = doc(firestore, `product/${productId}`);
-    // batch.delete(productRef);
-    // batch
-    //   .commit()
-    //   .then(() => {
-    //     message.success('Xóa thành công');
-    //   })
-    //   .catch((e) => {
-    //     message.error('Xóa thất bại');
-    //     console.log('Xóa thất bại: ', e);
-    //   });
+  const handleDelete = async (productId) => {
+    const productRef = doc(firestore, `products/${productId}`);
+    updateDoc(productRef, {
+      status: 'deleted',
+    })
+      .then(() => {
+        message.success('Xóa thành công');
+      })
+      .catch((e) => {
+        message.error('Xóa thất bại: ', e);
+      });
   };
 
   let dataTable = [];
   if (products.length > 0) {
     dataTable = products.map((product) => {
-      const index = _.findIndex(inventories, { productId: product?.productId });
-
       return {
         key: product?.productId,
         photo: <Image width={80} src={product?.images[0]} />,
         title: product?.title,
-        price: inventories[index]?.price,
-        stock: inventories[index]?.stock,
+        price: <Price>{product?.inventory?.price}</Price>,
+        stock: product?.inventory?.stock,
         action: (
           <>
             <Space direction="vertical" size="small">

@@ -39,7 +39,7 @@ const tabItems = [
 function ProductsPage() {
   return (
     <Container>
-      <Tabs defaultActiveKey="tab-1" items={tabItems} />;
+      <Tabs defaultActiveKey="tab-1" items={tabItems} />
     </Container>
   );
 }

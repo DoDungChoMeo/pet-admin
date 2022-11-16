@@ -30,6 +30,8 @@ function AllProductPage() {
 }
 
 const ContainerStyled = styled.div`
+  min-height: 70vh;
+
   .ant-tabs-nav {
     margin: 0;
     position: relative;

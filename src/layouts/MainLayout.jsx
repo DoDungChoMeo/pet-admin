@@ -32,6 +32,7 @@ const LayoutStyled = styled.div`
     margin-bottom: 0;
     @media (max-width: 991.18px) {
       margin: 0;
+      margin-top: 30px;
     }
     padding: 30px 20px;
     border-radius: 2px;

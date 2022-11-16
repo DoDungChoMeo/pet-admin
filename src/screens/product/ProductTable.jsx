@@ -37,16 +37,19 @@ const columns = [
     title: 'Giá bán',
     dataIndex: 'price',
     key: 'price',
+    responsive: ['sm'],
   },
   {
     title: 'Kho',
     dataIndex: 'stock',
     key: 'stock',
+    responsive: ['sm'],
   },
   {
     title: 'Trạng thái',
     dataIndex: 'status',
     key: 'status',
+    responsive: ['md'],
   },
   {
     title: 'Thao tác',

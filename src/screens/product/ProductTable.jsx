@@ -17,6 +17,7 @@ import {
   collection,
   doc,
   updateDoc,
+  deleteDoc
 } from 'firebase/firestore';
 import _ from 'lodash';
 import { useFirestoreQuery } from '~/hooks';
@@ -84,9 +85,59 @@ function ProductTable({ title, productStatus }) {
         message.success('Xóa thành công');
       })
       .catch((e) => {
-        message.error('Xóa thất bại: ', e);
+        message.error('Xóa thất bại');
       });
   };
+
+  const handleDeletePermanently = async (productId) => {
+    const productRef = doc(firestore, `products/${productId}`);
+    deleteDoc(productRef)
+      .then(() => {
+        message.success('Xóa thành công');
+      })
+      .catch((e) => {
+        message.error('Xóa thất bại');
+      });
+  };
+
+  const handleRestore = async (productId) => {
+    const productRef = doc(firestore, `products/${productId}`);
+    updateDoc(productRef, {
+      status: 'visible',
+    })
+      .then(() => {
+        message.success('Khôi phục thành công');
+      })
+      .catch((e) => {
+        message.error('Khôi phục thất bại');
+      });
+  }
+
+  const handleHidden = async (productId) => {
+    const productRef = doc(firestore, `products/${productId}`);
+    updateDoc(productRef, {
+      status: 'hidden',
+    })
+      .then(() => {
+        message.success('Ẩn sản phẩm thành công');
+      })
+      .catch((e) => {
+        message.error('Ẩn sản phẩm thất bại');
+      });
+  }
+
+  const handleUnhidden = async (productId) => {
+    const productRef = doc(firestore, `products/${productId}`);
+    updateDoc(productRef, {
+      status: 'visible',
+    })
+      .then(() => {
+        message.success('Hiển thị thành công');
+      })
+      .catch((e) => {
+        message.error('Hiển thị thất bại');
+      });
+  }
 
   let dataTable = [];
   if (products.length > 0) {
@@ -106,10 +157,21 @@ function ProductTable({ title, productStatus }) {
                   title="Bạn có muốn khôi phục sản phẩm này?"
                   okText="Được"
                   cancelText="Không"
-                  onConfirm={() => console.log("Khôi phục sản phẩm: ", product?.productId)}
+                  onConfirm={() => handleRestore(product?.productId)}
                 >
                   <Button style={{ width: '100%'}}>
                     Khôi phục
+                  </Button>
+                </Popconfirm>
+                <Popconfirm
+                  title="Bạn có muốn xóa sản phẩm này vĩnh viễn?"
+                  okText="Xóa luôn"
+                  okButtonProps={{danger: true}}
+                  cancelText="Không"
+                  onConfirm={() => handleDeletePermanently(product?.productId)}
+                >
+                  <Button danger type="primary" style={{ width: '100%' }}>
+                    Xóa vĩnh viễn
                   </Button>
                 </Popconfirm>
               </Space>
@@ -120,11 +182,24 @@ function ProductTable({ title, productStatus }) {
                 <Button type="primary" style={{ width: '100%' }}>
                   Cập nhật
                 </Button>
+
+                <Popconfirm
+                  title="Bạn có muốn xóa?"
+                  okText="Xóa"
+                  okButtonProps={{danger: true}}
+                  cancelText="Không"
+                  onConfirm={() => handleDelete(product?.productId)}
+                >
+                  <Button danger type="primary" style={{ width: '100%' }}>
+                    Xóa
+                  </Button>
+                </Popconfirm>
+
                 <Popconfirm
                   title="Bạn có muốn hiển thị sản phẩm này?"
                   okText="Được"
                   cancelText="Không"
-                  onConfirm={() => console.log("Hiển thị sản phẩm: ", product?.productId)}
+                  onConfirm={() => handleUnhidden(product?.productId)}
                 >
                   <Button style={{ width: '100%' }}>
                     Hiển thị
@@ -136,9 +211,22 @@ function ProductTable({ title, productStatus }) {
                 <Button type="primary" style={{ width: '100%' }}>
                   Cập nhật
                 </Button>
+                
+                <Popconfirm
+                  title="Bạn có muốn ẩn sản phẩm này?"
+                  okText="Được"
+                  cancelText="Không"
+                  onConfirm={() => handleHidden(product?.productId)}
+                >
+                  <Button style={{ width: '100%' }}>
+                    Ẩn
+                  </Button>
+                </Popconfirm>
+
                 <Popconfirm
                   title="Bạn có muốn xóa?"
                   okText="Xóa"
+                  okButtonProps={{danger: true}}
                   cancelText="Không"
                   onConfirm={() => handleDelete(product?.productId)}
                 >

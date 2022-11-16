@@ -15,6 +15,9 @@ function MainLayout() {
         <ContentStyled>
           <Outlet />
         </ContentStyled>
+        <footer>
+          <p>Pet Friends ©2022 Made with love by Duc Tran</p>
+        </footer>
       </div>
     </LayoutStyled>
   );
@@ -22,6 +25,17 @@ function MainLayout() {
 
 const LayoutStyled = styled.div`
   display: flex;
+
+  footer {
+    background-color: white;
+    margin: 30px 50px;
+    margin-bottom: 0;
+    @media (max-width: 991.18px) {
+      margin: 0;
+    }
+    padding: 30px 20px;
+    border-radius: 2px;
+  }
 `;
 
 const ContentStyled = styled.main`

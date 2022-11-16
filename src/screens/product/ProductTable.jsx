@@ -162,6 +162,8 @@ function ProductTable({ title, productStatus }) {
         dataSource={dataTable}
         pagination={{
           pageSize: 5,
+          position: ["topRight"],
+          simple: true
         }}
       />
     </Container>

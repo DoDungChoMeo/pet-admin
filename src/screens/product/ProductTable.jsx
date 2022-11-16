@@ -100,19 +100,54 @@ function ProductTable({ title, productStatus }) {
         status: STATUS_MAP[product?.status],
         action: (
           <>
+            {product?.status === 'deleted' ? (
+              <Space direction="vertical" size="small">
+                <Popconfirm
+                  title="Bạn có muốn khôi phục sản phẩm này?"
+                  okText="Được"
+                  cancelText="Không"
+                  onConfirm={() => console.log("Khôi phục sản phẩm: ", product?.productId)}
+                >
+                  <Button style={{ width: '100%'}}>
+                    Khôi phục
+                  </Button>
+                </Popconfirm>
+              </Space>
+            ) :
+            product?.status === 'hidden'
+            ? 
             <Space direction="vertical" size="small">
-              <Button type="primary">Cập nhật</Button>
-              <Popconfirm
-                title="Bạn có muốn xóa?"
-                okText="Xóa"
-                cancelText="Không"
-                onConfirm={() => handleDelete(product?.productId)}
-              >
-                <Button danger type="primary" style={{ width: '100%' }}>
-                  Xóa
+                <Button type="primary" style={{ width: '100%' }}>
+                  Cập nhật
                 </Button>
-              </Popconfirm>
-            </Space>
+                <Popconfirm
+                  title="Bạn có muốn hiển thị sản phẩm này?"
+                  okText="Được"
+                  cancelText="Không"
+                  onConfirm={() => console.log("Hiển thị sản phẩm: ", product?.productId)}
+                >
+                  <Button style={{ width: '100%' }}>
+                    Hiển thị
+                  </Button>
+                </Popconfirm>
+              </Space>
+            :(
+              <Space direction="vertical" size="small">
+                <Button type="primary" style={{ width: '100%' }}>
+                  Cập nhật
+                </Button>
+                <Popconfirm
+                  title="Bạn có muốn xóa?"
+                  okText="Xóa"
+                  cancelText="Không"
+                  onConfirm={() => handleDelete(product?.productId)}
+                >
+                  <Button danger type="primary" style={{ width: '100%' }}>
+                    Xóa
+                  </Button>
+                </Popconfirm>
+              </Space>
+            )}
           </>
         ),
       };

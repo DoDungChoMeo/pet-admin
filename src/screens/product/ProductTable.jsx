@@ -22,6 +22,7 @@ import {
 import _ from 'lodash';
 import { useFirestoreQuery } from '~/hooks';
 import { Price } from '~/components';
+import { useNavigate } from 'react-router-dom';
 
 const columns = [
   {
@@ -66,6 +67,7 @@ const STATUS_MAP = {
 };
 
 function ProductTable({ title, productStatus }) {
+  const navigate = useNavigate();
   const firestore = getFirestore();
   const productQuery = query(
     collection(firestore, 'products'),
@@ -179,7 +181,9 @@ function ProductTable({ title, productStatus }) {
             product?.status === 'hidden'
             ? 
             <Space direction="vertical" size="small">
-                <Button type="primary" style={{ width: '100%' }}>
+                <Button type="primary" style={{ width: '100%' }} onClick={()=>{
+                  navigate(`/product/${product?.productId}`)
+                }}>
                   Cập nhật
                 </Button>
 
@@ -194,6 +198,7 @@ function ProductTable({ title, productStatus }) {
                     Xóa
                   </Button>
                 </Popconfirm>
+                
 
                 <Popconfirm
                   title="Bạn có muốn hiển thị sản phẩm này?"
@@ -208,7 +213,9 @@ function ProductTable({ title, productStatus }) {
               </Space>
             :(
               <Space direction="vertical" size="small">
-                <Button type="primary" style={{ width: '100%' }}>
+                <Button type="primary" style={{ width: '100%' }} onClick={()=>{
+                  navigate(`/product/${product?.productId}`)
+                }}>
                   Cập nhật
                 </Button>
                 

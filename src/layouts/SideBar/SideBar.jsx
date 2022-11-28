@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { BsBox } from 'react-icons/bs';
+import { BsFillCartCheckFill } from 'react-icons/bs';
 import { PlusCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import ImageSource from '~/assets/img/logo-pet-friends-2.png';
@@ -15,6 +16,11 @@ const menu = [
     label: 'Thêm sản phẩm',
     link: '/product/new',
     icon: <PlusCircleOutlined />,
+  },
+  {
+    label: 'Đơn đặt hàng',
+    link: '/order/list',
+    icon: <BsFillCartCheckFill />,
   },
 ];
 function SideBar({ collapsed }) {

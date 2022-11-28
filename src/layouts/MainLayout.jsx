@@ -40,6 +40,7 @@ const LayoutStyled = styled.div`
 `;
 
 const ContentStyled = styled.main`
+  min-height: 70vh;
   margin: 30px 50px;
   @media (max-width: 991.18px) {
     margin: 0;

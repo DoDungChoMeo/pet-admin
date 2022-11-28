@@ -1,20 +1,12 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import {
-  Typography,
-  Row,
-  Col,
-  Badge,
-  message,
-  Skeleton,
-  Checkbox,
-} from 'antd';
+import { Typography, Row, Col, Badge, message, Skeleton, Checkbox } from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
+import { doc, setDoc, getFirestore } from 'firebase/firestore';
 import { Price } from '~/components';
 import useFirestoreDocument from '~/hooks/useFirestoreDocument/useFirestoreDocument';
-import { doc, setDoc, getFirestore } from 'firebase/firestore';
 
 function OrderDetailPage() {
   const { orderId } = useParams();
@@ -42,7 +34,7 @@ function OrderDetailPage() {
       <Row gutter={[20, 20]}>
         <Col span={24}>
           <Typography.Title level={3}>
-            <span>Thông tin đơn hàng{"  "}</span>          
+            <span>Thông tin đơn hàng{'  '}</span>
             <div style={{ display: 'inline-flex', alignItems: 'center' }}>
               <OrderProgress className="order-progress">{`  (Đơn hàng ${
                 order?.status === 'processed' ? 'đã được' : 'đang chờ'
@@ -88,14 +80,23 @@ function OrderDetailPage() {
         <Col span={24}>
           <div style={{ display: 'flex' }}>
             <div style={{ marginLeft: 'auto' }}>
-            <label for='order-mark' style={{color: "var(--ant-primary-color)", fontWeight: "bold", cursor: "pointer"}}>Đánh dấu đơn hàng đã được xử lý </label>
-            <Checkbox
-              id='order-mark'
-              onChange={(e) => {
-                handleCheckboxChange(e.target.checked);
-              }}
-              
-            />
+              <label
+                for="order-mark"
+                style={{
+                  color: 'var(--ant-primary-color)',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                }}
+              >
+                Đánh dấu đơn hàng đã được xử lý{' '}
+              </label>
+              <Checkbox
+                id="order-mark"
+                checked={order?.status === 'processed'}
+                onChange={(e) => {
+                  handleCheckboxChange(e.target.checked);
+                }}
+              />
             </div>
           </div>
         </Col>

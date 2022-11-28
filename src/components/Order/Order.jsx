@@ -28,7 +28,7 @@ function Order({ order }) {
             <span>{order.orderId}</span>
           </p>
           <p>
-            <strong>Email người đặt: </strong>
+            <strong>Email: </strong>
             <span>{order.user.email}</span>
           </p>
           <p>

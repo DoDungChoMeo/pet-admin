@@ -46,12 +46,12 @@ function Order({ order }) {
             <strong>Trạng thái đơn hàng: </strong>
             <span style={{ display: 'inline-block' }}>
               {`${
-                order?.status !== 'processed' ? 'Đang chờ' : 'Đã được'
-              } xử lý`}
+                order?.status !== 'processed' ? 'Đang chờ' : 'Đã xử lý'
+              }`}
             </span>
             {order?.status === 'processed' ? (
               <CheckCircleOutlined
-                style={{ marginLeft: 5, color: 'var(--ant-success-color)' }}
+                style={{ marginLeft: 5, color: 'var(--ant-success-color)', fontWeight: "bold" }}
               />
             ) : null}
           </p>

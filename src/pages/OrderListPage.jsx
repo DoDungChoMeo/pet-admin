@@ -3,12 +3,16 @@ import styled from 'styled-components';
 import { List, Typography } from 'antd';
 
 import { Order } from '~/components';
-import useFirestoreCollection from '~/hooks/useFirestoreCollection/useFirestoreCollection';
+import useFirestoreQuery from '~/hooks/useFirestoreQuery/useFirestoreQuery';
+import { getFirestore, collection, query, orderBy } from 'firebase/firestore';
 
 const { Title } = Typography;
 
 function OrderListPage() {
-  const [orders, ordersLoading] = useFirestoreCollection('orders');
+  const firestore = getFirestore();
+  const ordersRef = collection(firestore, 'orders');
+  const q = query(ordersRef, orderBy('createAt', 'desc'));
+  const [orders, ordersLoading] = useFirestoreQuery(q);
 
   return (
     <ContainerStyled className="order-list-page">

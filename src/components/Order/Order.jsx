@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { CheckCircleOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import { setDoc, getFirestore, doc } from 'firebase/firestore';
 
 import { timeDifference } from '~/utils';
@@ -28,6 +28,10 @@ function Order({ order }) {
             <span>{order.orderId}</span>
           </p>
           <p>
+            <strong>Người Đặt: </strong>
+            <span>{order.user.name}</span>
+          </p>
+          <p>
             <strong>Email: </strong>
             <span>{order.user.email}</span>
           </p>
@@ -46,7 +50,7 @@ function Order({ order }) {
             <strong>Trạng thái đơn hàng: </strong>
             <span style={{ display: 'inline-block' }}>
               {`${
-                order?.status !== 'processed' ? 'Đang chờ' : 'Đã xử lý'
+                order?.status == 'processed' ? 'Đã xử lý' : order?.status == 'canceled' ? 'Đã bị hủy' : 'Đang chờ'
               }`}
             </span>
             {order?.status === 'processed' ? (
@@ -54,6 +58,12 @@ function Order({ order }) {
                 style={{ marginLeft: 5, color: 'var(--ant-success-color)', fontWeight: "bold" }}
               />
             ) : null}
+
+            {order?.status === 'canceled' ? (
+                <CloseOutlined
+                  style={{ marginLeft: 5, color: 'var(--ant-error-color)' }}
+                />
+              ) : null}
           </p>
         </OrderInfo>
       </Link>
@@ -74,7 +84,7 @@ const OrderInfo = styled.div`
   align-items: center;
   gap: 10px;
   p {
-    flex: 1 1 calc(100% / 5 - 10px);
+    flex: 1 1 calc(100% / 7 - 10px);
   }
 
   strong,

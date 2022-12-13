@@ -15,7 +15,7 @@ const items = [
     children: <ProductTable title="Danh sách sản phẩm đã ẩn" productStatus="hidden" />,
   },
   {
-    label: 'Sản phẩm đã xóa',
+    label: 'Thùng rác',
     key: 'product-deleted',
     children: <ProductTable title="Danh sách sản phẩm đã xóa" productStatus="deleted" />,
   },

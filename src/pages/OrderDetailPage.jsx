@@ -1,7 +1,16 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { Typography, Row, Col, Badge, message, Skeleton, Checkbox } from 'antd';
-import { CheckCircleOutlined } from '@ant-design/icons';
+import {
+  Typography,
+  Row,
+  Col,
+  Badge,
+  message,
+  Skeleton,
+  Checkbox,
+  Space,
+} from 'antd';
+import { CheckCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
 import { doc, setDoc, getFirestore } from 'firebase/firestore';
@@ -12,7 +21,24 @@ function OrderDetailPage() {
   const { orderId } = useParams();
   const [order, orderLoading] = useFirestoreDocument(`orders/${orderId}`);
 
-  const handleCheckboxChange = (checked) => {
+  const handleCanceledCheck = (checked) => {
+    const firestore = getFirestore();
+    const orderRef = doc(firestore, `orders/${orderId}`);
+    setDoc(
+      orderRef,
+      { status: checked ? 'canceled' : 'pending' },
+      { merge: true }
+    )
+      .then(() => {
+        message.success('Cập nhật trạng thái đơn hàng thành công');
+      })
+      .catch((e) => {
+        message.error('Cập nhật trạng thái đơn hàng thất bại');
+        console.log(e);
+      });
+  }
+
+  const handleProcessedCheck = (checked) => {
     const firestore = getFirestore();
     const orderRef = doc(firestore, `orders/${orderId}`);
     setDoc(
@@ -37,12 +63,18 @@ function OrderDetailPage() {
             <span>Thông tin đơn hàng{'  '}</span>
             <div style={{ display: 'inline-flex', alignItems: 'center' }}>
               <OrderProgress className="order-progress">{`  (Đơn hàng ${
-                order?.status === 'processed' ? 'đã được' : 'đang chờ'
-              } xử lý)`}</OrderProgress>
+                order?.status === 'processed' ? 'đã được xử lý' : 'canceled' ? 'đã bị hủy' : 'đang chờ xử lý'
+              })`}</OrderProgress>
 
               {order?.status === 'processed' ? (
                 <CheckCircleOutlined
                   style={{ marginLeft: 5, color: 'var(--ant-success-color)' }}
+                />
+              ) : null}
+
+              {order?.status === 'canceled' ? (
+                <CloseOutlined
+                  style={{ marginLeft: 5, color: 'var(--ant-error-color)' }}
                 />
               ) : null}
             </div>
@@ -80,23 +112,47 @@ function OrderDetailPage() {
         <Col span={24}>
           <div style={{ display: 'flex' }}>
             <div style={{ marginLeft: 'auto' }}>
-              <label
-                for="order-mark"
-                style={{
-                  color: 'var(--ant-primary-color)',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                }}
-              >
-                Đánh dấu đơn hàng đã được xử lý{' '}
-              </label>
-              <Checkbox
-                id="order-mark"
-                checked={order?.status === 'processed'}
-                onChange={(e) => {
-                  handleCheckboxChange(e.target.checked);
-                }}
-              />
+              <Space>
+                <div>
+                  <label
+                    htmlFor="canceled-mark"
+                    style={{
+                      color: 'var(--ant-error-color)',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Đánh dấu đơn hàng đã bị HỦY{' '}
+                  </label>
+                  <Checkbox
+                    id="canceled-mark"
+                    checked={order?.status === 'canceled'}
+                    onChange={(e) => {
+                      handleCanceledCheck(e.target.checked);
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="processed-mark"
+                    style={{
+                      color: 'var(--ant-success-color)',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Đánh dấu đơn hàng đã được XỬ LÝ{' '}
+                  </label>
+                  <Checkbox
+                    id="processed-mark"
+                    checked={order?.status === 'processed'}
+                    onChange={(e) => {
+                      handleProcessedCheck(e.target.checked);
+                    }}
+                  />
+                </div>
+              </Space>
             </div>
           </div>
         </Col>
